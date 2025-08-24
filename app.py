@@ -26,6 +26,11 @@ def show_introduction():
     Enter a YouTube video URL to get predictions.
     """)
 
+# Analysis Section
+def show_analysis():
+    st.header("Data Analysis")
+    st.write("Here you can add analysis of the dataset, such as trends, distributions, or correlations.")
+    
 # Prediction Section
 def show_prediction():
     st.header("Enter YouTube Video URL")
@@ -59,11 +64,6 @@ def show_prediction():
             ])
             fig.update_layout(title_text='Current vs Predicted Video Performance', barmode='group', yaxis_title='Count')
             st.plotly_chart(fig)
-
-# Analysis Section
-def show_analysis():
-    st.header("Data Analysis")
-    st.write("Here you can add analysis of the dataset, such as trends, distributions, or correlations.")
 
 # Display the selected section
 if section == "Introduction":
