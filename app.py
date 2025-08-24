@@ -11,7 +11,7 @@ import streamlit as st
 from googleapiclient.discovery import build
 
 # --- CONFIG ---
-YOUTUBE_API_KEY = "AIzaSyBQAjxgoJb8COazwkvElzi4bZLujsIZ3xE"
+YOUTUBE_API_KEY = st.secrets["YOUTUBE_API_KEY"]
 
 # --- FUNCTIONS ---
 def get_video_stats(video_url):
