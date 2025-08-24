@@ -15,7 +15,7 @@ df = pd.read_csv("youtube_data_deploy.csv")
 
 # Sidebar for navigation
 st.sidebar.title("Navigation")
-section = st.sidebar.radio("Choose a section", ["Introduction", "Prediction", "Analysis"])
+section = st.sidebar.radio("Choose a section", ["Introduction", "Analysis", "Prediction",])
 
 # Introduction Section
 def show_introduction():
