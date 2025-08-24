@@ -68,7 +68,7 @@ def show_prediction():
 # Display the selected section
 if section == "Introduction":
     show_introduction()
-elif section == "Prediction":
-    show_prediction()
 elif section == "Analysis":
     show_analysis()
+elif section == "Prediction":
+    show_prediction()
