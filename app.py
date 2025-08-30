@@ -52,7 +52,7 @@ def show_analysis():
     else:
         filtered_df = df
 
-    tab1, tab2, tab3 = st.tabs(["Video Data Overview", "Project Overview", "Sentiment Analysis"])
+    tab1, tab2, tab3 = st.tabs(["Video Overview", "Project Overview", "Sentiment Analysis"])
 
     # --- TAB 1: Overview ---
     with tab1:
