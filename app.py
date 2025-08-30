@@ -56,7 +56,7 @@ def show_analysis():
     # --- TAB 1: Overview ---
     with tab1:
         st.subheader("Dataset Overview")
-        st.dataframe(filtered_df.head())
+        st.dataframe(filtered_df.head(10))
         st.write(f"Total Records: {len(filtered_df)}")
 
         # Correlation Heatmap
