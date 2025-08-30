@@ -28,10 +28,6 @@ section = st.sidebar.radio(
 def show_introduction():
     #st.title("YouTube Video Performance Predictor")
     st.image("header.png", use_container_width=True)
-    st.markdown("""
-    This app predicts future views and likes of YouTube videos based on current metrics,
-    sentiment scores (via Gemini LLM), and metadata encodings.
-    """)
 
     st.markdown(
         """
