@@ -65,9 +65,9 @@ def show_analysis():
         # Performance Overview
         st.subheader("Performance Overview")
         col1, col2, col3 = st.columns(3)
-        col1.metric("Total Views", f"{filtered_df['view_count'].mean():,.0f}")
-        col2.metric("Total Likes", f"{filtered_df['likes'].mean():,.0f}")
-        col3.metric("Total Comments", f"{filtered_df['comment_count'].mean():,.0f}")
+        col1.metric("Total Views", f"{filtered_df['view_count'].max():,.0f}")
+        col2.metric("Total Likes", f"{filtered_df['likes'].max():,.0f}")
+        col3.metric("Total Comments", f"{filtered_df['comment_count'].max():,.0f}")
 
         # Correlation Heatmap
         corr = filtered_df[[
