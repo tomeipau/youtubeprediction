@@ -78,13 +78,21 @@ def show_analysis():
 
     # --- TAB 2: Project Overview ---
     with tab2:
-        st.subheader("Project Overview")
-
-         #--Dataset Overview
+        #st.subheader("Project Overview")
+        
+        #--Dataset Overview
         st.subheader("Dataset Overview")
         st.dataframe(filtered_df.head(5))
         st.markdown("""
-    Data record is captured on different days, and each row consist of different sentiment scorings
+    Data is extracted from Youtube API V3 and downloaded from https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv. 
+    Data consists of records of ideo title, channel title, publish time, tags, views, likes and dislikes, description, and comment count that is extracted daily
+    """)
+
+         #--Processed Dataset (LLM Embedded) Overview
+        st.subheader("Dataset Overview")
+        st.dataframe(filtered_df.head(5))
+        st.markdown("""
+    Dataset was processed in Bigquery for LLM sentiment scoring for the columns title, description and tags. Encodings were also done for non-numerical values.
     """)
         #st.write(f"Total Records: {len(filtered_df)}")
 
