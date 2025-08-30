@@ -1,157 +1,89 @@
 import streamlit as st
 import pandas as pd
-import joblib
 import plotly.express as px
-import plotly.graph_objects as go
-
-# Page layout
-st.set_page_config(layout="wide")
-
-# Load models
-model_viewcount = joblib.load("boosted_tree_model_viewcount.pkl")
-model_likes = joblib.load("boosted_tree_model_likes.pkl")
 
 # Load dataset
-df = pd.read_csv("youtube_data_deploy.csv")
+df = pd.read_csv("youtube_data.csv")
 
-# Sidebar Navigation
-st.sidebar.title("Navigation")
-section = st.sidebar.radio(
-    "Choose a section",
-    ["Introduction", "Analysis Dashboard", "Prediction"]
+# Sidebar - User Input
+st.sidebar.header("Filter Options")
+channel_selection = st.sidebar.multiselect(
+    "Select Channel(s)", options=df["channelTitle"].unique()
+)
+video_link_input = st.sidebar.text_input("Paste YouTube Video Link (Optional)")
+
+# Filter Logic
+filtered_df = df.copy()
+if channel_selection:
+    filtered_df = filtered_df[filtered_df["channelTitle"].isin(channel_selection)]
+if video_link_input:
+    filtered_df = filtered_df[filtered_df["youtube_link"].str.contains(video_link_input)]
+
+st.title("YouTube Performance Analysis Dashboard")
+
+# ---------------------- KPI Cards ----------------------
+avg_views = int(filtered_df['view_count'].mean()) if not filtered_df.empty else 0
+avg_likes_per_view = round(filtered_df['likes_per_view'].mean(), 4) if not filtered_df.empty else 0
+best_sentiment = (
+    filtered_df[['title_score','description_score','tags_score']]
+    .mean().idxmax() if not filtered_df.empty else "N/A"
 )
 
-# ------------------------
-# INTRODUCTION
-# ------------------------
-def show_introduction():
-    st.title("YouTube Video Performance Predictor")
-    st.image("header.png")
-    st.markdown("""
-    This app predicts future views and likes of YouTube videos based on current metrics,
-    sentiment scores (via Gemini LLM), and metadata encodings.
-    """)
+col1, col2, col3 = st.columns(3)
+col1.metric("Average Views", avg_views)
+col2.metric("Avg Likes per View", avg_likes_per_view)
+col3.metric("Strongest Sentiment Driver", best_sentiment)
 
-# ------------------------
-# ANALYSIS DASHBOARD
-# ------------------------
-def show_analysis():
-    st.title("Dataset Dashboard")
+st.markdown("---")
 
-    # --- Video Filter ---
-    st.subheader("Filter by YouTube Video Link")
-    video_url = st.text_input("Paste YouTube Video URL (optional)")
+# ---------------------- Sentiment vs Engagement Impact ----------------------
+if not filtered_df.empty:
+    fig_sentiment_impact = px.scatter(
+        filtered_df,
+        x="title_score",
+        y="view_count",
+        size="likes_per_view",
+        color="description_score",
+        hover_data=["tags_score", "youtube_link"],
+        title="Impact of Sentiment Scores on View Count"
+    )
+    st.plotly_chart(fig_sentiment_impact, use_container_width=True)
 
-    if video_url:
-        video_id = video_url.split("v=")[-1].split("&")[0]
-        filtered_df = df[df['video_id'] == video_id]
-        if filtered_df.empty:
-            st.warning("Video not found. Showing full dataset instead.")
-            filtered_df = df
-    else:
-        filtered_df = df
+# ---------------------- Top Performing Videos ----------------------
+st.subheader("Top Performing Videos")
+if not filtered_df.empty:
+    top_videos = (
+        filtered_df[['youtube_link', 'view_count', 'likes', 'likes_per_view']]
+        .sort_values(by='view_count', ascending=False)
+        .head(10)
+    )
+    st.dataframe(top_videos)
 
-    tab1, tab2, tab3 = st.tabs(["Overview", "Engagement Trends", "Sentiment Analysis"])
+# ---------------------- Sentiment Distribution with Engagement Bands ----------------------
+if not filtered_df.empty:
+    filtered_df["engagement_band"] = pd.qcut(filtered_df["likes_per_view"], q=3, labels=["Low", "Medium", "High"])
+    fig_sentiment_band = px.histogram(
+        filtered_df, x="title_score", color="engagement_band",
+        nbins=30, barmode="overlay",
+        title="Sentiment vs Engagement Levels"
+    )
+    st.plotly_chart(fig_sentiment_band, use_container_width=True)
 
-    # --- TAB 1: Overview ---
-    with tab1:
-        st.subheader("Dataset Overview")
-        st.dataframe(filtered_df.head(10))
-        st.markdown("""
-    Data record is captured on different days, and each row consist of different sentiment scorings
-    """)
-        #st.write(f"Total Records: {len(filtered_df)}")
-
-        # Correlation Heatmap
-        corr = filtered_df[[
-            "view_count", "likes", "dislikes", "comment_count",
-            "views_per_day", "likes_per_view",
-            "title_score", "description_score", "tags_score"
-        ]].corr()
-
-        fig_corr = px.imshow(
-            corr, text_auto=True, aspect="auto",
-            title="Correlation Heatmap of Key Features"
+# ---------------------- Day-of-Week or Month Trends ----------------------
+if not filtered_df.empty:
+    # If month_encoded & day_encoded exist
+    if "month_encoded" in filtered_df.columns and "day_encoded" in filtered_df.columns:
+        st.subheader("Upload Performance by Day & Month")
+        fig_day = px.bar(
+            filtered_df.groupby("day_encoded")["view_count"].mean().reset_index(),
+            x="day_encoded", y="view_count",
+            title="Average Views by Day of the Week"
         )
-        st.plotly_chart(fig_corr, use_container_width=True)
+        st.plotly_chart(fig_day, use_container_width=True)
 
-    # --- TAB 2: Engagement Trends ---
-    with tab2:
-        st.subheader("Engagement Trends Over Time")
-
-        if video_url and not filtered_df.empty:
-            fig_views = px.line(
-                filtered_df, x="days_to_trend", y="view_count",
-                title="View Count vs Days to Trend"
-            )
-            st.plotly_chart(fig_views, use_container_width=True)
-
-            fig_likes = px.line(
-                filtered_df, x="days_to_trend", y="likes",
-                title="Likes vs Days to Trend"
-            )
-            st.plotly_chart(fig_likes, use_container_width=True)
-        else:
-            st.info("Please paste a YouTube video link above to view engagement trends.")
-
-
-    # --- TAB 3: Sentiment Analysis ---
-    with tab3:
-        st.subheader("Sentiment Score Distribution")
-        sentiment_cols = ["title_score", "description_score", "tags_score"]
-        for col in sentiment_cols:
-            fig_sentiment = px.histogram(
-                filtered_df, x=col, nbins=30,
-                title=f"Distribution of {col}"
-            )
-            st.plotly_chart(fig_sentiment, use_container_width=True)
-
-# ------------------------
-# PREDICTION
-# ------------------------
-def show_prediction():
-    st.header("Predict YouTube Video Performance")
-    video_url = st.text_input("Enter YouTube Video URL")
-
-    if video_url:
-        video_id = video_url.split("v=")[-1].split("&")[0]
-        video_row = df[df['video_id'] == video_id]
-
-        if video_row.empty:
-            st.error("Video not found in dataset.")
-        else:
-            view_count = int(video_row['view_count'].values[0])
-            likes = int(video_row['likes'].values[0])
-
-            st.write(f"**Current Views:** {view_count}")
-            st.write(f"**Current Likes:** {likes}")
-
-            features = pd.DataFrame([[view_count, likes]], columns=["view_count", "likes"])
-            predicted_views = model_viewcount.predict(features)[0]
-            predicted_likes = model_likes.predict(features)[0]
-
-            st.success("Predicted Performance")
-            col1, col2 = st.columns(2)
-            col1.metric("Predicted Views", int(predicted_views))
-            col2.metric("Predicted Likes", int(predicted_likes))
-
-            fig = go.Figure(data=[
-                go.Bar(name='Current', x=['Views', 'Likes'], y=[view_count, likes]),
-                go.Bar(name='Predicted', x=['Views', 'Likes'], y=[predicted_views, predicted_likes])
-            ])
-            fig.update_layout(
-                title_text='Current vs Predicted Video Performance',
-                barmode='group', yaxis_title='Count'
-            )
-            st.plotly_chart(fig)
-
-# ------------------------
-# PAGE SELECTION
-# ------------------------
-if section == "Introduction":
-    show_introduction()
-elif section == "Analysis Dashboard":
-    show_analysis()
-elif section == "Prediction":
-    show_prediction()
-
+        fig_month = px.bar(
+            filtered_df.groupby("month_encoded")["view_count"].mean().reset_index(),
+            x="month_encoded", y="view_count",
+            title="Average Views by Month"
+        )
+        st.plotly_chart(fig_month, use_container_width=True)
