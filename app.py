@@ -19,7 +19,7 @@ df = pd.read_csv("youtube_data_deploy.csv")
 st.sidebar.title("Navigation")
 section = st.sidebar.radio(
     "Choose a section",
-    ["Introduction", "Analysis & Dashboard", "Prediction"]
+    ["Introduction", "Analysis Dashboard", "Prediction"]
 )
 
 # ------------------------
