@@ -19,7 +19,7 @@ df = pd.read_csv("youtube_data_deploy.csv")
 st.sidebar.title("Navigation")
 section = st.sidebar.radio(
     "Choose a section",
-    ["About", "Analysis & Dashboard", "Prediction"]
+    ["Introduction", "Analysis & Dashboard", "Prediction"]
 )
 
 # ------------------------
@@ -27,90 +27,11 @@ section = st.sidebar.radio(
 # ------------------------
 def show_introduction():
     #st.title("YouTube Video Performance Predictor")
-    st.image("header.png", use_container_width=True)
-
-    st.markdown(
-        """
-        <style>
-        .section-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #FF4B4B;
-            margin-top: 25px;
-        }
-        .subsection-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1E88E5;
-            margin-top: 15px;
-        }
-        .body-text {
-            font-size: 16px;
-            line-height: 1.6;
-            text-align: justify;
-        }
-        </style>
-        """, unsafe_allow_html=True
-    )
-
-    st.markdown('<p class="section-title">Background</p>', unsafe_allow_html=True)
-    st.markdown(
-        """
-        <p class="body-text">
-        This app predicts YouTube video performance using metrics, sentiment analysis (via Gemini LLM),
-        and metadata encodings. It aims to provide creators with data-driven insights to optimize
-        engagement and forecasting.
-        </p>
-        """, unsafe_allow_html=True
-    )
-
-    st.markdown('<p class="section-title">Limitations of Existing Research</p>', unsafe_allow_html=True)
-
-    st.markdown('<p class="subsection-title">Focus on Authors\' Own Countries</p>', unsafe_allow_html=True)
-    st.markdown(
-        """
-        <p class="body-text">
-        Many studies use various models like VAR, ARDL, and deep learning to analyze trends but often focus on their own countries' datasets, limiting generalizability.
-        </p>
-        """, unsafe_allow_html=True
-    )
-
-    st.markdown('<p class="subsection-title">Use of Annual Data</p>', unsafe_allow_html=True)
-    st.markdown(
-        """
-        <p class="body-text">
-        Research relying on annual data may fail to capture fast-changing trends, especially in digital engagement metrics like YouTube performance.
-        </p>
-        """, unsafe_allow_html=True
-    )
-
-    st.markdown('<p class="subsection-title">Data Obsolescence</p>', unsafe_allow_html=True)
-    st.markdown(
-        """
-        <p class="body-text">
-        Some studies rely on outdated datasets, which limits their relevance to current patterns and performance forecasting.
-        </p>
-        """, unsafe_allow_html=True
-    )
-
-    st.markdown('<p class="section-title">Data Used</p>', unsafe_allow_html=True)
-    st.markdown(
-        """
-        <p class="body-text">
-        The dataset includes video metadata, engagement metrics, and sentiment analysis. It is sourced from
-        YouTube Trending Video Dataset (Kaggle) and processed with LLM-based sentiment scoring.
-        </p>
-        """, unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <p class="body-text">
-        **Table 1.** Data Dictionary  
-        **Table 2.** Processed YouTube video dataset with sentiment and performance metrics.
-        </p>
-        """, unsafe_allow_html=True
-    )
+    st.image("header.png")
+    st.markdown("""
+    This app predicts future views and likes of YouTube videos based on current metrics,
+    sentiment scores (via Gemini LLM), and metadata encodings.
+    """)
 
 # ------------------------
 # ANALYSIS DASHBOARD
