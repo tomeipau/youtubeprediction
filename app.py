@@ -56,7 +56,8 @@ def show_introduction():
         """, unsafe_allow_html=True
     )
 
-    st.markdown('<p class="section-title">Background</p>', unsafe_allow_html=True)
+    #st.markdown('<p class="section-title">Background</p>', unsafe_allow_html=True)
+    st.title("Background")
     st.markdown(
         """
         <p class="body-text">
