@@ -56,6 +56,7 @@ def show_analysis():
 
     # --- TAB 1: Overview ---
     with tab1:
+        #Dataset Overview
         st.subheader("Dataset Overview")
         st.dataframe(filtered_df.head(5))
         st.markdown("""
@@ -85,7 +86,15 @@ def show_analysis():
 
     # --- TAB 2: Engagement Trends ---
     with tab2:
-        st.subheader("Engagement Trends Over Time")
+        st.subheader("Project Overview")
+
+         #--Dataset Overview
+        st.subheader("Dataset Overview")
+        st.dataframe(filtered_df.head(5))
+        st.markdown("""
+    Data record is captured on different days, and each row consist of different sentiment scorings
+    """)
+        #st.write(f"Total Records: {len(filtered_df)}")
 
         if video_url and not filtered_df.empty:
             fig_views = px.line(
