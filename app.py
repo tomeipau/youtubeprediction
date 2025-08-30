@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots  
 
 # Page layout
 st.set_page_config(layout="wide")
