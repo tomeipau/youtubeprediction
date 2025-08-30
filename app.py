@@ -157,13 +157,59 @@ def show_prediction():
 
             st.success("Predicted Performance")
             col1, col2 = st.columns(2)
-            col1.metric("Predicted Views", int(predicted_views))
-            col2.metric("Predicted Likes", int(predicted_likes))
-
-            st.success("Predicted Performance")
-            col1, col2 = st.columns(2)
             col1.metric("Predicted Views", f"{predicted_views:,.0f}")
             col2.metric("Predicted Likes", f"{predicted_likes:,.0f}")
+
+            # --- Separated Subplots ---
+            fig = make_subplots(rows=1, cols=2, subplot_titles=("Views", "Likes"))
+
+            # Views Bar
+            fig.add_trace(
+                go.Bar(
+                    name='Current Views',
+                    x=['Current'], y=[view_count],
+                    text=[f"{view_count:,.0f}"],
+                    textposition='auto'
+                ), row=1, col=1
+            )
+            fig.add_trace(
+                go.Bar(
+                    name='Predicted Views',
+                    x=['Predicted'], y=[predicted_views],
+                    text=[f"{predicted_views:,.0f}"],
+                    textposition='auto'
+                ), row=1, col=1
+            )
+
+            # Likes Bar
+            fig.add_trace(
+                go.Bar(
+                    name='Current Likes',
+                    x=['Current'], y=[likes],
+                    text=[f"{likes:,.0f}"],
+                    textposition='auto'
+                ), row=1, col=2
+            )
+            fig.add_trace(
+                go.Bar(
+                    name='Predicted Likes',
+                    x=['Predicted'], y=[predicted_likes],
+                    text=[f"{predicted_likes:,.0f}"],
+                    textposition='auto'
+                ), row=1, col=2
+            )
+
+            fig.update_layout(
+                title_text='Current vs Predicted Video Performance',
+                showlegend=True,
+                height=500,
+                barmode='group',
+                yaxis_title='Count'
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+            #--old code
 
 
             fig = go.Figure(data=[
