@@ -34,7 +34,7 @@ def show_introduction():
         <h3 style='text-align: center; color: #4CAF50;'>View Project Slides</h3>
     </a>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True)
     st.markdown("""
     This app predicts future views and likes of YouTube videos based on current metrics,
     sentiment scores (via Gemini LLM), and metadata encodings.
