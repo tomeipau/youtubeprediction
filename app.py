@@ -54,27 +54,8 @@ def show_analysis():
 
     tab1, tab2, tab3 = st.tabs(["Overview", "Engagement Trends", "Sentiment Analysis"])
 
-    # --- TAB 1: Video Overview ---
+    # --- TAB 1: Overview ---
     with tab1:
-        st.subheader("Engagement Trends Over Time")
-    
-            if video_url and not filtered_df.empty:
-                fig_views = px.line(
-                    filtered_df, x="days_to_trend", y="view_count",
-                    title="View Count vs Days to Trend"
-                )
-                st.plotly_chart(fig_views, use_container_width=True)
-    
-                fig_likes = px.line(
-                    filtered_df, x="days_to_trend", y="likes",
-                    title="Likes vs Days to Trend"
-                )
-                st.plotly_chart(fig_likes, use_container_width=True)
-            else:
-                st.info("Please paste a YouTube video link above to view engagement trends.")
-
-    # --- TAB 2: Project Overview ---
-    with tab2:
         st.subheader("Dataset Overview")
         st.dataframe(filtered_df.head(5))
         st.markdown("""
@@ -101,9 +82,9 @@ def show_analysis():
             title="Correlation Heatmap of Key Features"
         )
         st.plotly_chart(fig_corr, use_container_width=True)
-        
-        
-        #---old code
+
+    # --- TAB 2: Engagement Trends ---
+    with tab2:
         st.subheader("Engagement Trends Over Time")
 
         if video_url and not filtered_df.empty:
