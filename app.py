@@ -36,9 +36,9 @@ def show_introduction():
         """
         <style>
         .section-title {
-            font-size: 22px;
+            font-size: 42px;
             font-weight: bold;
-            color: #FF4B4B;
+            color: #000000;
             margin-top: 25px;
         }
         .subsection-title {
