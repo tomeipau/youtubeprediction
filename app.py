@@ -104,9 +104,6 @@ def show_analysis():
 
     # --- TAB 3: Sentiment Analysis ---
     with tab3:
-        st.subheader("Sentiment Score Distribution")
-        st.subheader("Sentiment Score Analysis")
-
         st.markdown("""
         ### Sentiment Scoring Overview
         This dashboard uses **Google's Gemini LLM** to analyze text data (video titles, descriptions, and tags).  
@@ -124,6 +121,7 @@ def show_analysis():
         
         Gemini provides advanced contextual understanding, ensuring more accurate sentiment representation.
         """)
+        st.subheader("Sentiment Score Distribution")
 
         sentiment_cols = ["title_score", "description_score", "tags_score"]
         for col in sentiment_cols:
