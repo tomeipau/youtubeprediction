@@ -26,15 +26,8 @@ section = st.sidebar.radio(
 # INTRODUCTION
 # ------------------------
 def show_introduction():
-    st.title("YouTube Video Performance Predictor")
-    #st.image("header.png")
-    st.markdown(
-    """
-    <iframe src="https://docs.google.com/presentation/d/1WZY5XedM8LhwiaFWqWuzbqXcszutMHMoyfSdTbhiXFQ"
-    frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
-    """,
-    unsafe_allow_html=True)
-
+    #st.title("YouTube Video Performance Predictor")
+    st.image("header.png")
     st.markdown("""
     This app predicts future views and likes of YouTube videos based on current metrics,
     sentiment scores (via Gemini LLM), and metadata encodings.
