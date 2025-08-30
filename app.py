@@ -57,7 +57,10 @@ def show_analysis():
     with tab1:
         st.subheader("Dataset Overview")
         st.dataframe(filtered_df.head(10))
-        st.write(f"Total Records: {len(filtered_df)}")
+        st.markdown("""
+    Data record is captured on different days, and each row consist of different sentiment scorings
+    """)
+        #st.write(f"Total Records: {len(filtered_df)}")
 
         # Correlation Heatmap
         corr = filtered_df[[
