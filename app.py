@@ -37,7 +37,7 @@ def show_introduction():
 # ANALYSIS DASHBOARD
 # ------------------------
 def show_analysis():
-    st.title("Dataset Dashboard")
+    st.title("Analysis & Video Performance Dashboard")
 
     # --- Video Filter ---
     st.subheader("Filter by YouTube Video Link")
@@ -95,6 +95,14 @@ def show_analysis():
     Dataset was processed in Bigquery for LLM sentiment scoring for the columns title, description and tags. Encodings were also done for non-numerical values.
     """)
         #st.write(f"Total Records: {len(filtered_df)}")
+
+        #--EDA
+        st.subheader("Exploratory Data Analysis")
+        #st.image("header.png")
+        st.markdown("""
+        This app predicts future views and likes of YouTube videos based on current metrics,
+        sentiment scores (via Gemini LLM), and metadata encodings.
+        """)
 
         if video_url and not filtered_df.empty:
             fig_views = px.line(
