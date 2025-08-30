@@ -1,87 +1,54 @@
 import streamlit as st
 import pandas as pd
+import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pickle
 
-# Page Config
-st.set_page_config(page_title="YouTube Video Analysis", layout="wide")
+# Load dataset
+df = pd.read_csv("your_dataset.csv")
 
-# Load Data
-@st.cache_data
-def load_data():
-    return pd.read_csv("youtube_data_deploy.csv")
+# Load models
+model_viewcount = joblib.load("boosted_tree_model_viewcount.pkl")
+model_likes = joblib.load("boosted_tree_model_likes.pkl")
 
-df = load_data()
-
-# Sidebar Filters
-st.sidebar.image("header.png", use_container_width=True)
-st.sidebar.title("Filters")
-
-# Replace channel filter with video_id filter
-video_list = ["All"] + sorted(df['video_id'].dropna().unique().tolist())
-selected_video = st.sidebar.selectbox("Select Video", video_list)
-
-if selected_video != "All":
-    df = df[df['video_id'] == selected_video]
-
-# Title
+# App Title
 st.title("YouTube Video Performance Dashboard")
 
-# --- SECTION 1: Performance Overview ---
-st.subheader("Performance Overview")
-col1, col2, col3 = st.columns(3)
-col1.metric("Total Views", f"{df['view_count'].sum():,.0f}")
-col2.metric("Total Likes", f"{df['likes'].sum():,.0f}")
-col3.metric("Total Comments", f"{df['comment_count'].sum():,.0f}")
+# --- SECTION 1: URL Input & Basic Video Info ---
+st.header("1. Enter YouTube Video URL")
+youtube_url = st.text_input("Paste a YouTube video URL:")
 
-# --- SECTION 2: Engagement Metrics ---
-st.subheader("Engagement Metrics")
-fig, ax = plt.subplots(figsize=(8, 4))
-sns.scatterplot(data=df, x='view_count', y='likes', ax=ax)
-ax.set_title("Likes vs View Count")
-st.pyplot(fig)
+if youtube_url:
+    st.write(f"Video Link: {youtube_url}")
+    video_id = youtube_url.split("v=")[-1]
+    video_data = df[df["video_id"] == video_id]
+    
+    if not video_data.empty:
+        st.subheader("Basic Video Data")
+        st.dataframe(video_data)
+    else:
+        st.warning("No data found for this video.")
 
-# --- SECTION 3: Content Quality Analysis ---
-st.subheader("Content Quality Scores")
-st.write(df[['title_score', 'description_score', 'tags_score']].describe())
+# --- SECTION 2: Prediction Section ---
+st.header("2. Predict Performance")
+st.write("Prediction uses trained Boosted Tree models.")
 
-# --- SECTION 4: Category Analysis ---
-st.subheader("Category Analysis")
-if 'category_encoded' in df.columns:
-    cat_fig, cat_ax = plt.subplots(figsize=(8, 4))
-    sns.countplot(x='category_encoded', data=df, ax=cat_ax)
-    cat_ax.set_title("Distribution of Categories")
-    st.pyplot(cat_fig)
+if youtube_url and not video_data.empty:
+    features = video_data.drop(columns=["video_id", "youtube_link"])
+    pred_views = model_viewcount.predict(features)[0]
+    pred_likes = model_likes.predict(features)[0]
 
-# --- SECTION 5: Temporal Analysis ---
-st.subheader("Temporal Trends")
-if 'month_encoded' in df.columns:
-    temp_fig, temp_ax = plt.subplots(figsize=(8, 4))
-    sns.lineplot(x='month_encoded', y='view_count', data=df, ax=temp_ax)
-    temp_ax.set_title("Views by Month")
-    st.pyplot(temp_fig)
+    st.metric("Predicted Views", f"{int(pred_views):,}")
+    st.metric("Predicted Likes", f"{int(pred_likes):,}")
 
-# --- SECTION 6: Predictive Modelling ---
-st.subheader("Predictive Modelling")
+# --- SECTION 3: Correlation Heatmap ---
+st.header("3. Correlation Heatmap")
+corr = df.corr(numeric_only=True)
+plt.figure(figsize=(10, 6))
+sns.heatmap(corr, annot=False, cmap="coolwarm")
+st.pyplot(plt)
 
-# Load Pre-Trained Models
-with open("boosted_tree_model_likes.pkl", "rb") as f:
-    model_likes = pickle.load(f)
-with open("boosted_tree_model_viewcount.pkl", "rb") as f:
-    model_views = pickle.load(f)
-
-st.markdown("### Predict Views and Likes")
-input_features = df.drop(columns=['video_id', 'youtube_link'], errors='ignore').mean().to_frame().T
-pred_views = model_views.predict(input_features)[0]
-pred_likes = model_likes.predict(input_features)[0]
-
-st.write(f"**Predicted Views:** {pred_views:,.0f}")
-st.write(f"**Predicted Likes:** {pred_likes:,.0f}")
-
-# --- SECTION 7: Video Links ---
-st.subheader("Watch Video")
-if 'youtube_link' in df.columns:
-    for link in df['youtube_link'].unique():
-        st.markdown(f"[Watch on YouTube]({link})")
-
+# --- SECTION 4: Top Performing Videos ---
+st.header("4. Top Performing Videos")
+top_videos = df.groupby("video_id")["view_count"].max().sort_values(ascending=False).head(10)
+st.write(top_videos)
