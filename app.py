@@ -3,96 +3,85 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
-import os
 
+# Page Config
 st.set_page_config(page_title="YouTube Video Analysis", layout="wide")
 
-# Header image
-if os.path.exists("header.png"):
-    st.image("header.png", use_container_width=True)
+# Load Data
+@st.cache_data
+def load_data():
+    return pd.read_csv("youtube_data_deploy.csv")
 
+df = load_data()
+
+# Sidebar Filters
+st.sidebar.image("header.png", use_container_width=True)
+st.sidebar.title("Filters")
+
+# Replace channel filter with video_id filter
+video_list = ["All"] + sorted(df['video_id'].dropna().unique().tolist())
+selected_video = st.sidebar.selectbox("Select Video", video_list)
+
+if selected_video != "All":
+    df = df[df['video_id'] == selected_video]
+
+# Title
 st.title("YouTube Video Performance Dashboard")
 
-# Load dataset safely
-if os.path.exists("youtube_data_deploy.csv"):
-    df = pd.read_csv("youtube_data_deploy.csv")
-else:
-    st.error("Dataset 'youtube_data_deploy.csv' not found. Please upload it.")
-    st.stop()
+# --- SECTION 1: Performance Overview ---
+st.subheader("Performance Overview")
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Views", f"{df['view_count'].sum():,.0f}")
+col2.metric("Total Likes", f"{df['likes'].sum():,.0f}")
+col3.metric("Total Comments", f"{df['comment_count'].sum():,.0f}")
 
-# Sidebar for filtering
-st.sidebar.header("Filter Options")
-channel_list = ["All"] + sorted(df['channelTitle'].dropna().unique().tolist())
-selected_channel = st.sidebar.selectbox("Select Channel", channel_list)
-
-if selected_channel != "All":
-    df = df[df['channelTitle'] == selected_channel]
-
-# Video URL filter
-video_url_input = st.sidebar.text_input("Enter YouTube Video URL (optional):")
-if video_url_input:
-    video_id = video_url_input.split("v=")[-1].split("&")[0]
-    df = df[df['video_id'] == video_id]
-
-# ==============================
-# 1. Top Performing Videos
-# ==============================
-st.subheader("Top Performing Videos by Views")
-top_videos = df.sort_values(by='view_count', ascending=False).head(10)
-st.dataframe(top_videos[['video_id', 'channelTitle', 'view_count', 'likes']])
-
-# ==============================
-# 2. Category-Level Performance
-# ==============================
-st.subheader("Category Performance")
-category_performance = df.groupby('category_encoded')[['view_count', 'likes']].mean().reset_index()
-fig, ax = plt.subplots()
-sns.barplot(x='category_encoded', y='view_count', data=category_performance, ax=ax)
-ax.set_title("Average Views by Category")
+# --- SECTION 2: Engagement Metrics ---
+st.subheader("Engagement Metrics")
+fig, ax = plt.subplots(figsize=(8, 4))
+sns.scatterplot(data=df, x='view_count', y='likes', ax=ax)
+ax.set_title("Likes vs View Count")
 st.pyplot(fig)
 
-# ==============================
-# 3. Engagement Distribution
-# ==============================
-st.subheader("Engagement Distribution")
-fig, ax = plt.subplots()
-sns.histplot(df['likes_per_view'], bins=30, kde=True, ax=ax)
-ax.set_title("Likes per View Distribution")
-st.pyplot(fig)
+# --- SECTION 3: Content Quality Analysis ---
+st.subheader("Content Quality Scores")
+st.write(df[['title_score', 'description_score', 'tags_score']].describe())
 
-# ==============================
-# 4. Correlation Heatmap
-# ==============================
-st.subheader("Feature Correlation Heatmap")
-corr = df[['view_count', 'likes', 'comment_count', 'title_score', 'tags_score']].corr()
-fig, ax = plt.subplots(figsize=(8,6))
-sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
-st.pyplot(fig)
+# --- SECTION 4: Category Analysis ---
+st.subheader("Category Analysis")
+if 'category_encoded' in df.columns:
+    cat_fig, cat_ax = plt.subplots(figsize=(8, 4))
+    sns.countplot(x='category_encoded', data=df, ax=cat_ax)
+    cat_ax.set_title("Distribution of Categories")
+    st.pyplot(cat_fig)
 
-# ==============================
-# 5. Predictive Modeling
-# ==============================
-st.subheader("Predict Video Performance")
+# --- SECTION 5: Temporal Analysis ---
+st.subheader("Temporal Trends")
+if 'month_encoded' in df.columns:
+    temp_fig, temp_ax = plt.subplots(figsize=(8, 4))
+    sns.lineplot(x='month_encoded', y='view_count', data=df, ax=temp_ax)
+    temp_ax.set_title("Views by Month")
+    st.pyplot(temp_fig)
 
-# Load Models
-try:
-    with open("boosted_tree_model_viewcount.pkl", "rb") as f:
-        model_view = pickle.load(f)
-    with open("boosted_tree_model_likes.pkl", "rb") as f:
-        model_likes = pickle.load(f)
+# --- SECTION 6: Predictive Modelling ---
+st.subheader("Predictive Modelling")
 
-    st.write("Enter video features:")
-    title_score = st.number_input("Title Score", 0.0, 1.0, 0.5)
-    tags_score = st.number_input("Tags Score", 0.0, 1.0, 0.5)
-    comment_count = st.number_input("Comment Count", 0, 1000000, 100)
-    category_encoded = st.number_input("Category Encoded", 0, 50, 5)
+# Load Pre-Trained Models
+with open("boosted_tree_model_likes.pkl", "rb") as f:
+    model_likes = pickle.load(f)
+with open("boosted_tree_model_viewcount.pkl", "rb") as f:
+    model_views = pickle.load(f)
 
-    if st.button("Predict"):
-        features = [[title_score, tags_score, comment_count, category_encoded]]
-        predicted_views = model_view.predict(features)[0]
-        predicted_likes = model_likes.predict(features)[0]
-        st.success(f"Predicted Views: {int(predicted_views)}")
-        st.success(f"Predicted Likes: {int(predicted_likes)}")
+st.markdown("### Predict Views and Likes")
+input_features = df.drop(columns=['video_id', 'youtube_link'], errors='ignore').mean().to_frame().T
+pred_views = model_views.predict(input_features)[0]
+pred_likes = model_likes.predict(input_features)[0]
 
-except FileNotFoundError:
-    st.warning("Prediction models not found. Please upload .pkl files.")
+st.write(f"**Predicted Views:** {pred_views:,.0f}")
+st.write(f"**Predicted Likes:** {pred_likes:,.0f}")
+
+# --- SECTION 7: Video Links ---
+st.subheader("Watch Video")
+if 'youtube_link' in df.columns:
+    for link in df['youtube_link'].unique():
+        st.markdown(f"[Watch on YouTube]({link})")
+
