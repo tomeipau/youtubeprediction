@@ -62,6 +62,13 @@ def show_analysis():
     """)
         #st.write(f"Total Records: {len(filtered_df)}")
 
+        # Performance Overview
+st.subheader("Performance Overview")
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Views", f"{df['view_count'].sum():,.0f}")
+col2.metric("Total Likes", f"{df['likes'].sum():,.0f}")
+col3.metric("Total Comments", f"{df['comment_count'].sum():,.0f}")
+
         # Correlation Heatmap
         corr = filtered_df[[
             "view_count", "likes", "dislikes", "comment_count",
