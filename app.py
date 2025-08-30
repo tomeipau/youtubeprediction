@@ -1,47 +1,116 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import plotly.express as px
 import plotly.graph_objects as go
 
-# Set page layout to wide
+# Page layout
 st.set_page_config(layout="wide")
 
 # Load models
 model_viewcount = joblib.load("boosted_tree_model_viewcount.pkl")
 model_likes = joblib.load("boosted_tree_model_likes.pkl")
 
-# Load CSV
+# Load dataset
 df = pd.read_csv("youtube_data_deploy.csv")
 
-# Sidebar for navigation
+# Sidebar Navigation
 st.sidebar.title("Navigation")
-section = st.sidebar.radio("Choose a section", ["Introduction", "Analysis", "Prediction",])
+section = st.sidebar.radio(
+    "Choose a section",
+    ["Introduction", "Analysis Dashboard", "Prediction"]
+)
 
-# Introduction Section
+# ------------------------
+# INTRODUCTION
+# ------------------------
 def show_introduction():
     st.title("YouTube Video Performance Predictor")
     st.image("header.png")
     st.markdown("""
-    This app predicts the future views and likes of a YouTube video based on its current statistics.
-    Enter a YouTube video URL to get predictions.
+    This app predicts future views and likes of YouTube videos based on current metrics,
+    sentiment scores (via Gemini LLM), and metadata encodings.
     """)
 
-# Analysis Section
+# ------------------------
+# ANALYSIS DASHBOARD
+# ------------------------
 def show_analysis():
-    st.header("Data Analysis")
-    st.write("Here you can add analysis of the dataset, such as trends, distributions, or correlations.")
-    
-# Prediction Section
+    st.title("Dataset Dashboard")
+
+    # --- Video Filter ---
+    st.subheader("Filter by YouTube Video Link")
+    video_url = st.text_input("Paste YouTube Video URL (optional)")
+
+    if video_url:
+        video_id = video_url.split("v=")[-1].split("&")[0]
+        filtered_df = df[df['video_id'] == video_id]
+        if filtered_df.empty:
+            st.warning("Video not found. Showing full dataset instead.")
+            filtered_df = df
+    else:
+        filtered_df = df
+
+    tab1, tab2, tab3 = st.tabs(["Overview", "Engagement Trends", "Sentiment Analysis"])
+
+    # --- TAB 1: Overview ---
+    with tab1:
+        st.subheader("Dataset Overview")
+        st.dataframe(filtered_df.head())
+        st.write(f"Total Records: {len(filtered_df)}")
+
+        # Correlation Heatmap
+        corr = filtered_df[[
+            "view_count", "likes", "dislikes", "comment_count",
+            "views_per_day", "likes_per_view",
+            "title_score", "description_score", "tags_score"
+        ]].corr()
+
+        fig_corr = px.imshow(
+            corr, text_auto=True, aspect="auto",
+            title="Correlation Heatmap of Key Features"
+        )
+        st.plotly_chart(fig_corr, use_container_width=True)
+
+    # --- TAB 2: Engagement Trends ---
+    with tab2:
+        st.subheader("Engagement Trends Over Time")
+        fig_views = px.line(
+            filtered_df, x="days_to_trend", y="view_count",
+            title="View Count vs Days to Trend"
+        )
+        st.plotly_chart(fig_views, use_container_width=True)
+
+        fig_likes = px.line(
+            filtered_df, x="days_to_trend", y="likes",
+            title="Likes vs Days to Trend"
+        )
+        st.plotly_chart(fig_likes, use_container_width=True)
+
+    # --- TAB 3: Sentiment Analysis ---
+    with tab3:
+        st.subheader("Sentiment Score Distribution")
+        sentiment_cols = ["title_score", "description_score", "tags_score"]
+        for col in sentiment_cols:
+            fig_sentiment = px.histogram(
+                filtered_df, x=col, nbins=30,
+                title=f"Distribution of {col}"
+            )
+            st.plotly_chart(fig_sentiment, use_container_width=True)
+
+# ------------------------
+# PREDICTION
+# ------------------------
 def show_prediction():
-    st.header("Enter YouTube Video URL")
-    video_url = st.text_input("YouTube Video URL")
+    st.header("Predict YouTube Video Performance")
+    video_url = st.text_input("Enter YouTube Video URL")
 
     if video_url:
         video_id = video_url.split("v=")[-1].split("&")[0]
         video_row = df[df['video_id'] == video_id]
 
         if video_row.empty:
-            st.error("Video not found in the dataset.")
+            st.error("Video not found in dataset.")
         else:
             view_count = int(video_row['view_count'].values[0])
             likes = int(video_row['likes'].values[0])
@@ -53,22 +122,28 @@ def show_prediction():
             predicted_views = model_viewcount.predict(features)[0]
             predicted_likes = model_likes.predict(features)[0]
 
-            st.success("Predictions:")
-            st.write(f"Predicted Views: {int(predicted_views)}")
-            st.write(f"Predicted Likes: {int(predicted_likes)}")
+            st.success("Predicted Performance")
+            col1, col2 = st.columns(2)
+            col1.metric("Predicted Views", int(predicted_views))
+            col2.metric("Predicted Likes", int(predicted_likes))
 
-            # Plotting
             fig = go.Figure(data=[
                 go.Bar(name='Current', x=['Views', 'Likes'], y=[view_count, likes]),
                 go.Bar(name='Predicted', x=['Views', 'Likes'], y=[predicted_views, predicted_likes])
             ])
-            fig.update_layout(title_text='Current vs Predicted Video Performance', barmode='group', yaxis_title='Count')
+            fig.update_layout(
+                title_text='Current vs Predicted Video Performance',
+                barmode='group', yaxis_title='Count'
+            )
             st.plotly_chart(fig)
 
-# Display the selected section
+# ------------------------
+# PAGE SELECTION
+# ------------------------
 if section == "Introduction":
     show_introduction()
-elif section == "Analysis":
+elif section == "Analysis Dashboard":
     show_analysis()
 elif section == "Prediction":
     show_prediction()
+
