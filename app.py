@@ -98,7 +98,7 @@ def show_analysis():
 
         #--EDA
         st.subheader("Exploratory Data Analysis")
-        #st.image("header.png")
+        st.image("EDA.png")
         st.markdown("""
         This app predicts future views and likes of YouTube videos based on current metrics,
         sentiment scores (via Gemini LLM), and metadata encodings.
