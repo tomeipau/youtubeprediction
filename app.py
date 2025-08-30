@@ -36,7 +36,7 @@ def show_introduction():
         """
         <style>
         .section-title {
-            font-size: 42px;
+            font-size: 68px;
             font-weight: bold;
             color: #000000;
             margin-top: 25px;
