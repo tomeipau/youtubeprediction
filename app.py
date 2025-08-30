@@ -56,14 +56,6 @@ def show_analysis():
 
     # --- TAB 1: Overview ---
     with tab1:
-        #Dataset Overview
-        st.subheader("Dataset Overview")
-        st.dataframe(filtered_df.head(5))
-        st.markdown("""
-    Data record is captured on different days, and each row consist of different sentiment scorings
-    """)
-        #st.write(f"Total Records: {len(filtered_df)}")
-
         # Performance Overview
         st.subheader("Performance Overview")
         col1, col2, col3 = st.columns(3)
@@ -84,7 +76,7 @@ def show_analysis():
         )
         st.plotly_chart(fig_corr, use_container_width=True)
 
-    # --- TAB 2: Engagement Trends ---
+    # --- TAB 2: Project Overview ---
     with tab2:
         st.subheader("Project Overview")
 
