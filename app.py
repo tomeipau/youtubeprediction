@@ -149,19 +149,9 @@ def show_prediction():
             view_count = int(video_row['view_count'].values[0])
             likes = int(video_row['likes'].values[0])
 
-            #--Old code
-            #st.write(f"**Current Views:** {view_count:,.0f}")
-            #st.write(f"**Current Likes:** {likes:,.0f}")
-
             features = pd.DataFrame([[view_count, likes]], columns=["view_count", "likes"])
             predicted_views = model_viewcount.predict(features)[0]
             predicted_likes = model_likes.predict(features)[0]
-
-            #--Old code
-            #st.success("Predicted Performance")
-            #col1, col2 = st.columns(2)
-            #col1.metric("Predicted Views", f"{predicted_views:,.0f}")
-            #col2.metric("Predicted Likes", f"{predicted_likes:,.0f}")
 
             st.success("Predicted Performance")
             col1, col2 = st.columns(2)
@@ -223,19 +213,6 @@ def show_prediction():
             )
 
             st.plotly_chart(fig, use_container_width=True)
-
-            #--old code
-
-
-            fig = go.Figure(data=[
-                go.Bar(name='Current', x=['Views', 'Likes'], y=[view_count, likes]),
-                go.Bar(name='Predicted', x=['Views', 'Likes'], y=[predicted_views, predicted_likes])
-            ])
-            fig.update_layout(
-                title_text='Current vs Predicted Video Performance',
-                barmode='group', yaxis_title='Count'
-            )
-            st.plotly_chart(fig)
 
 # ------------------------
 # PAGE SELECTION
