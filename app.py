@@ -19,7 +19,7 @@ df = pd.read_csv("youtube_data_deploy.csv")
 st.sidebar.title("Navigation")
 section = st.sidebar.radio(
     "Choose a section",
-    ["Introduction", "Analysis Dashboard", "Prediction"]
+    ["Introduction", "Analysis & Dashboard", "Prediction"]
 )
 
 # ------------------------
@@ -27,7 +27,14 @@ section = st.sidebar.radio(
 # ------------------------
 def show_introduction():
     st.title("YouTube Video Performance Predictor")
-    st.image("header.png")
+    #st.image("header.png")
+    st.markdown(
+    """
+    <a href="https://docs.google.com/presentation/d/1WZY5XedM8LhwiaFWqWuzbqXcszutMHMoyfSdTbhiXFQ/edit?slide=id.g34ea9cb4a0f_0_143#slide=id.g34ea9cb4a0f_0_143" target="_blank">
+        <h3 style='text-align: center; color: #4CAF50;'>View Project Slides</h3>
+    </a>
+    """,
+    unsafe_allow_html=True
     st.markdown("""
     This app predicts future views and likes of YouTube videos based on current metrics,
     sentiment scores (via Gemini LLM), and metadata encodings.
