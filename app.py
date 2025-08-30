@@ -149,17 +149,31 @@ def show_prediction():
             view_count = int(video_row['view_count'].values[0])
             likes = int(video_row['likes'].values[0])
 
-            st.write(f"**Current Views:** {view_count:,.0f}")
-            st.write(f"**Current Likes:** {likes:,.0f}")
+            #--Old code
+            #st.write(f"**Current Views:** {view_count:,.0f}")
+            #st.write(f"**Current Likes:** {likes:,.0f}")
 
             features = pd.DataFrame([[view_count, likes]], columns=["view_count", "likes"])
             predicted_views = model_viewcount.predict(features)[0]
             predicted_likes = model_likes.predict(features)[0]
 
+            #--Old code
+            #st.success("Predicted Performance")
+            #col1, col2 = st.columns(2)
+            #col1.metric("Predicted Views", f"{predicted_views:,.0f}")
+            #col2.metric("Predicted Likes", f"{predicted_likes:,.0f}")
+
             st.success("Predicted Performance")
             col1, col2 = st.columns(2)
+            
+            #--Predicted metrics
             col1.metric("Predicted Views", f"{predicted_views:,.0f}")
             col2.metric("Predicted Likes", f"{predicted_likes:,.0f}")
+            
+            #--Smaller text for current values under metrics
+            col1.markdown(f"<span style='font-size:12px; color:gray'>Current: {view_count:,.0f}</span>", unsafe_allow_html=True)
+            col2.markdown(f"<span style='font-size:12px; color:gray'>Current: {likes:,.0f}</span>", unsafe_allow_html=True)
+
 
             # --- Separated Subplots ---
             fig = make_subplots(rows=1, cols=2, subplot_titles=("Views", "Likes"))
