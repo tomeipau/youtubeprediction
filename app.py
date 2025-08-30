@@ -1,87 +1,156 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pickle
+import joblib
+import plotly.express as px
+import plotly.graph_objects as go
 
-# Page Config
-st.set_page_config(page_title="YouTube Video Analysis", layout="wide")
+# Page layout
+st.set_page_config(layout="wide")
 
-# Load Data
-@st.cache_data
-def load_data():
-    return pd.read_csv("youtube_data_deploy.csv")
+# Load models
+model_viewcount = joblib.load("boosted_tree_model_viewcount.pkl")
+model_likes = joblib.load("boosted_tree_model_likes.pkl")
 
-df = load_data()
+# Load dataset
+df = pd.read_csv("youtube_data_deploy.csv")
 
-# Sidebar Filters
-st.sidebar.image("header.png", use_container_width=True)
-st.sidebar.title("Filters")
+# Sidebar Navigation
+st.sidebar.title("Navigation")
+section = st.sidebar.radio(
+    "Choose a section",
+    ["Introduction", "Analysis Dashboard", "Prediction"]
+)
 
-# Replace channel filter with video_id filter
-video_list = ["All"] + sorted(df['video_id'].dropna().unique().tolist())
-selected_video = st.sidebar.selectbox("Select Video", video_list)
+# ------------------------
+# INTRODUCTION
+# ------------------------
+def show_introduction():
+    st.title("YouTube Video Performance Predictor")
+    st.image("header.png")
+    st.markdown("""
+    This app predicts future views and likes of YouTube videos based on current metrics,
+    sentiment scores (via Gemini LLM), and metadata encodings.
+    """)
 
-if selected_video != "All":
-    df = df[df['video_id'] == selected_video]
+# ------------------------
+# ANALYSIS DASHBOARD
+# ------------------------
+def show_analysis():
+    st.title("Dataset Dashboard")
 
-# Title
-st.title("YouTube Video Performance Dashboard")
+    # --- Video Filter ---
+    st.subheader("Filter by YouTube Video Link")
+    video_url = st.text_input("Paste YouTube Video URL (optional)")
 
-# --- SECTION 1: Performance Overview ---
-st.subheader("Performance Overview")
-col1, col2, col3 = st.columns(3)
-col1.metric("Total Views", f"{df['view_count'].sum():,.0f}")
-col2.metric("Total Likes", f"{df['likes'].sum():,.0f}")
-col3.metric("Total Comments", f"{df['comment_count'].sum():,.0f}")
+    if video_url:
+        video_id = video_url.split("v=")[-1].split("&")[0]
+        filtered_df = df[df['video_id'] == video_id]
+        if filtered_df.empty:
+            st.warning("Video not found. Showing full dataset instead.")
+            filtered_df = df
+    else:
+        filtered_df = df
 
-# --- SECTION 2: Engagement Metrics ---
-st.subheader("Engagement Metrics")
-fig, ax = plt.subplots(figsize=(8, 4))
-sns.scatterplot(data=df, x='view_count', y='likes', ax=ax)
-ax.set_title("Likes vs View Count")
-st.pyplot(fig)
+    tab1, tab2, tab3 = st.tabs(["Overview", "Engagement Trends", "Sentiment Analysis"])
 
-# --- SECTION 3: Content Quality Analysis ---
-st.subheader("Content Quality Scores")
-st.write(df[['title_score', 'description_score', 'tags_score']].describe())
+    # --- TAB 1: Overview ---
+    with tab1:
+        st.subheader("Dataset Overview")
+        st.dataframe(filtered_df.head(10))
+        st.markdown("""
+    Data record is captured on different days, and each row consist of different sentiment scorings
+    """)
+        #st.write(f"Total Records: {len(filtered_df)}")
 
-# --- SECTION 4: Category Analysis ---
-st.subheader("Category Analysis")
-if 'category_encoded' in df.columns:
-    cat_fig, cat_ax = plt.subplots(figsize=(8, 4))
-    sns.countplot(x='category_encoded', data=df, ax=cat_ax)
-    cat_ax.set_title("Distribution of Categories")
-    st.pyplot(cat_fig)
+        # Correlation Heatmap
+        corr = filtered_df[[
+            "view_count", "likes", "dislikes", "comment_count",
+            "views_per_day", "likes_per_view",
+            "title_score", "description_score", "tags_score"
+        ]].corr()
 
-# --- SECTION 5: Temporal Analysis ---
-st.subheader("Temporal Trends")
-if 'month_encoded' in df.columns:
-    temp_fig, temp_ax = plt.subplots(figsize=(8, 4))
-    sns.lineplot(x='month_encoded', y='view_count', data=df, ax=temp_ax)
-    temp_ax.set_title("Views by Month")
-    st.pyplot(temp_fig)
+        fig_corr = px.imshow(
+            corr, text_auto=True, aspect="auto",
+            title="Correlation Heatmap of Key Features"
+        )
+        st.plotly_chart(fig_corr, use_container_width=True)
 
-# --- SECTION 6: Predictive Modelling ---
-st.subheader("Predictive Modelling")
+    # --- TAB 2: Engagement Trends ---
+    with tab2:
+        st.subheader("Engagement Trends Over Time")
 
-# Load Pre-Trained Models
-with open("boosted_tree_model_likes.pkl", "rb") as f:
-    model_likes = pickle.load(f)
-with open("boosted_tree_model_viewcount.pkl", "rb") as f:
-    model_views = pickle.load(f)
+        if video_url and not filtered_df.empty:
+            fig_views = px.line(
+                filtered_df, x="days_to_trend", y="view_count",
+                title="View Count vs Days to Trend"
+            )
+            st.plotly_chart(fig_views, use_container_width=True)
 
-st.markdown("### Predict Views and Likes")
-input_features = df.drop(columns=['video_id', 'youtube_link'], errors='ignore').mean().to_frame().T
-pred_views = model_views.predict(input_features)[0]
-pred_likes = model_likes.predict(input_features)[0]
+            fig_likes = px.line(
+                filtered_df, x="days_to_trend", y="likes",
+                title="Likes vs Days to Trend"
+            )
+            st.plotly_chart(fig_likes, use_container_width=True)
+        else:
+            st.info("Please paste a YouTube video link above to view engagement trends.")
 
-st.write(f"**Predicted Views:** {pred_views:,.0f}")
-st.write(f"**Predicted Likes:** {pred_likes:,.0f}")
 
-# --- SECTION 7: Video Links ---
-st.subheader("Watch Video")
-if 'youtube_link' in df.columns:
-    for link in df['youtube_link'].unique():
-        st.markdown(f"[Watch on YouTube]({link})")
+    # --- TAB 3: Sentiment Analysis ---
+    with tab3:
+        st.subheader("Sentiment Score Distribution")
+        sentiment_cols = ["title_score", "description_score", "tags_score"]
+        for col in sentiment_cols:
+            fig_sentiment = px.histogram(
+                filtered_df, x=col, nbins=30,
+                title=f"Distribution of {col}"
+            )
+            st.plotly_chart(fig_sentiment, use_container_width=True)
 
+# ------------------------
+# PREDICTION
+# ------------------------
+def show_prediction():
+    st.header("Predict YouTube Video Performance")
+    video_url = st.text_input("Enter YouTube Video URL")
+
+    if video_url:
+        video_id = video_url.split("v=")[-1].split("&")[0]
+        video_row = df[df['video_id'] == video_id]
+
+        if video_row.empty:
+            st.error("Video not found in dataset.")
+        else:
+            view_count = int(video_row['view_count'].values[0])
+            likes = int(video_row['likes'].values[0])
+
+            st.write(f"**Current Views:** {view_count}")
+            st.write(f"**Current Likes:** {likes}")
+
+            features = pd.DataFrame([[view_count, likes]], columns=["view_count", "likes"])
+            predicted_views = model_viewcount.predict(features)[0]
+            predicted_likes = model_likes.predict(features)[0]
+
+            st.success("Predicted Performance")
+            col1, col2 = st.columns(2)
+            col1.metric("Predicted Views", int(predicted_views))
+            col2.metric("Predicted Likes", int(predicted_likes))
+
+            fig = go.Figure(data=[
+                go.Bar(name='Current', x=['Views', 'Likes'], y=[view_count, likes]),
+                go.Bar(name='Predicted', x=['Views', 'Likes'], y=[predicted_views, predicted_likes])
+            ])
+            fig.update_layout(
+                title_text='Current vs Predicted Video Performance',
+                barmode='group', yaxis_title='Count'
+            )
+            st.plotly_chart(fig)
+
+# ------------------------
+# PAGE SELECTION
+# ------------------------
+if section == "Introduction":
+    show_introduction()
+elif section == "Analysis Dashboard":
+    show_analysis()
+elif section == "Prediction":
+    show_prediction()
