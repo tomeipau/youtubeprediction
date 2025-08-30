@@ -105,6 +105,26 @@ def show_analysis():
     # --- TAB 3: Sentiment Analysis ---
     with tab3:
         st.subheader("Sentiment Score Distribution")
+        st.subheader("Sentiment Score Analysis")
+
+        st.markdown("""
+        ### Sentiment Scoring Overview
+        This dashboard uses **Google's Gemini LLM** to analyze text data (video titles, descriptions, and tags).  
+        Each piece of text is scored based on **sentiment polarity** and **confidence level**, which are derived from the model's predictions.  
+        
+        - **Title Score**: Sentiment derived from video title.  
+        - **Description Score**: Sentiment from video description.  
+        - **Tags Score**: Sentiment based on video tags.  
+        
+        **Score Meaning**:  
+        - Scores range from `-1` to `1`.  
+        - `-1` indicates a highly negative sentiment.  
+        - `0` represents a neutral sentiment.  
+        - `1` indicates a highly positive sentiment.  
+        
+        Gemini provides advanced contextual understanding, ensuring more accurate sentiment representation.
+        """)
+
         sentiment_cols = ["title_score", "description_score", "tags_score"]
         for col in sentiment_cols:
             fig_sentiment = px.histogram(
