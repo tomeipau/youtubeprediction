@@ -78,17 +78,22 @@ def show_analysis():
     # --- TAB 2: Engagement Trends ---
     with tab2:
         st.subheader("Engagement Trends Over Time")
-        fig_views = px.line(
-            filtered_df, x="days_to_trend", y="view_count",
-            title="View Count vs Days to Trend"
-        )
-        st.plotly_chart(fig_views, use_container_width=True)
 
-        fig_likes = px.line(
-            filtered_df, x="days_to_trend", y="likes",
-            title="Likes vs Days to Trend"
-        )
-        st.plotly_chart(fig_likes, use_container_width=True)
+        if video_url and not filtered_df.empty:
+            fig_views = px.line(
+                filtered_df, x="days_to_trend", y="view_count",
+                title="View Count vs Days to Trend"
+            )
+            st.plotly_chart(fig_views, use_container_width=True)
+
+            fig_likes = px.line(
+                filtered_df, x="days_to_trend", y="likes",
+                title="Likes vs Days to Trend"
+            )
+            st.plotly_chart(fig_likes, use_container_width=True)
+        else:
+            st.info("Please paste a YouTube video link above to view engagement trends.")
+
 
     # --- TAB 3: Sentiment Analysis ---
     with tab3:
