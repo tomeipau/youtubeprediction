@@ -56,7 +56,7 @@ def show_analysis():
     # --- TAB 1: Overview ---
     with tab1:
         st.subheader("Dataset Overview")
-        st.dataframe(filtered_df.head(10))
+        st.dataframe(filtered_df.head(5))
         st.markdown("""
     Data record is captured on different days, and each row consist of different sentiment scorings
     """)
