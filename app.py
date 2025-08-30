@@ -19,7 +19,7 @@ df = pd.read_csv("youtube_data_deploy.csv")
 st.sidebar.title("Navigation")
 section = st.sidebar.radio(
     "Choose a section",
-    ["Introduction", "Analysis & Dashboard", "Prediction"]
+    ["Background", "Overview", "Prediction"]
 )
 
 # ------------------------
@@ -234,9 +234,9 @@ def show_prediction():
 # ------------------------
 # PAGE SELECTION
 # ------------------------
-if section == "Introduction":
+if section == "Background":
     show_introduction()
-elif section == "Analysis & Dashboard":
+elif section == "Overview":
     show_analysis()
 elif section == "Prediction":
     show_prediction()
