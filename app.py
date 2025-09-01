@@ -64,20 +64,20 @@ def show_analysis():
         col3.metric("Total Comments", f"{filtered_df['comment_count'].max():,.0f}")
 
       # Dashboard   
-       if video_url and not filtered_df.empty:
-                fig_views = px.line(
-                    filtered_df, x="days_to_trend", y="view_count",
-                    title="View Count vs Days to Trend"
-                )
-                st.plotly_chart(fig_views, use_container_width=True)
-    
-                fig_likes = px.line(
-                    filtered_df, x="days_to_trend", y="likes",
-                    title="Likes vs Days to Trend"
-                )
-                st.plotly_chart(fig_likes, use_container_width=True)
-            else:
-                st.info("Please paste a YouTube video link above to view engagement trends.")
+           if video_url and not filtered_df.empty:
+                    fig_views = px.line(
+                        filtered_df, x="days_to_trend", y="view_count",
+                        title="View Count vs Days to Trend"
+                    )
+                    st.plotly_chart(fig_views, use_container_width=True)
+        
+                    fig_likes = px.line(
+                        filtered_df, x="days_to_trend", y="likes",
+                        title="Likes vs Days to Trend"
+                    )
+                    st.plotly_chart(fig_likes, use_container_width=True)
+                else:
+                    st.info("Please paste a YouTube video link above to view engagement trends.")
 
         # Correlation Heatmap
         corr = filtered_df[[
