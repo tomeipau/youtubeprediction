@@ -63,21 +63,28 @@ def show_analysis():
         col2.metric("Total Likes", f"{filtered_df['likes'].max():,.0f}")
         col3.metric("Total Comments", f"{filtered_df['comment_count'].max():,.0f}")
 
-      # Dashboard   
-           if video_url and not filtered_df.empty:
-                    fig_views = px.line(
-                        filtered_df, x="days_to_trend", y="view_count",
-                        title="View Count vs Days to Trend"
-                    )
-                    st.plotly_chart(fig_views, use_container_width=True)
-        
-                    fig_likes = px.line(
-                        filtered_df, x="days_to_trend", y="likes",
-                        title="Likes vs Days to Trend"
-                    )
-                    st.plotly_chart(fig_likes, use_container_width=True)
-                else:
-                    st.info("Please paste a YouTube video link above to view engagement trends.")
+                #--EDA
+        st.subheader("Exploratory Data Analysis")
+        st.image("EDA.png")
+        st.markdown("""
+        This app predicts future views and likes of YouTube videos based on current metrics,
+        sentiment scores (via Gemini LLM), and metadata encodings.
+        """)
+
+        if video_url and not filtered_df.empty:
+            fig_views = px.line(
+                filtered_df, x="days_to_trend", y="view_count",
+                title="View Count vs Days to Trend"
+            )
+            st.plotly_chart(fig_views, use_container_width=True)
+
+            fig_likes = px.line(
+                filtered_df, x="days_to_trend", y="likes",
+                title="Likes vs Days to Trend"
+            )
+            st.plotly_chart(fig_likes, use_container_width=True)
+        else:
+            st.info("Please paste a YouTube video link above to view engagement trends.")
 
         # Correlation Heatmap
         corr = filtered_df[[
