@@ -78,18 +78,6 @@ def show_analysis():
         else:
             st.info("Please paste a YouTube video link above to view engagement trends.")
 
-        # Correlation Heatmap
-        corr = filtered_df[[
-            "view_count", "likes", "dislikes", "comment_count",
-            "views_per_day", "likes_per_view",
-            "title_score", "description_score", "tags_score"
-        ]].corr()
-
-        fig_corr = px.imshow(
-            corr, text_auto=True, aspect="auto",
-            title="Correlation Heatmap of Key Features"
-        )
-        st.plotly_chart(fig_corr, use_container_width=True)
 
     # --- TAB 2: Project Overview ---
     with tab2:
