@@ -89,14 +89,10 @@ def show_analysis():
         # Dashboard
         st.subheader("Dashboard")
         
-        if video_url and not filtered_df.empty:
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Views", f"{filtered_df['view_count'].max():,.0f}")
         col2.metric("Total Likes", f"{filtered_df['likes'].max():,.0f}")
         col3.metric("Total Comments", f"{filtered_df['comment_count'].max():,.0f}")
-
-       else:
-            st.info("Please paste a YouTube video link above to view Dashboard.")
 
 
         # --- Engagement Trends ---
