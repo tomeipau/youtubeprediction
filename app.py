@@ -54,8 +54,8 @@ def show_analysis():
 
     tab1, tab2, tab3 = st.tabs(["Video Overview", "Project Overview", "Sentiment Analysis"])
 
-    # --- TAB 1: Overview ---
-    with tab1:
+    # --- TAB 2: Overview ---
+    with tab2:
         # Performance Overview
         st.subheader("Performance Overview")
         col1, col2, col3 = st.columns(3)
@@ -76,8 +76,8 @@ def show_analysis():
         )
         st.plotly_chart(fig_corr, use_container_width=True)
 
-    # --- TAB 2: Project Overview ---
-    with tab2:
+    # --- TAB 1: Project Overview ---
+    with tab1:
         #st.subheader("Project Overview")
         
         #--Dataset Overview
