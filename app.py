@@ -45,13 +45,20 @@ def show_analysis():
     video_url = st.text_input("Paste YouTube Video URL (optional)")
 
     if video_url:
-        video_id = video_url.split("v=")[-1].split("&")[0]
-        filtered_df = df[df['video_id'] == video_id]
-        if filtered_df.empty:
+    video_id = video_url.split("v=")[-1].split("&")[0]
+    
+    # Filter both dataframes
+    filtered_df = df[df['video_id'] == video_id]
+    filtered_df_raw = df_raw[df_raw['video_id'] == video_id]
+    
+    # If no match found, show full datasets
+        if filtered_df.empty and filtered_df_raw.empty:
             st.warning("Video not found. Showing full dataset instead.")
             filtered_df = df
+            filtered_df_raw = df_raw
     else:
         filtered_df = df
+        filtered_df_raw = df_raw
 
     tab1, tab2, tab3 = st.tabs(["Project Overview", "Dashboard", "Sentiment Analysis"])
 
@@ -61,7 +68,7 @@ def show_analysis():
         
         #--Dataset Overview
         st.subheader("Dataset Overview")
-        st.dataframe(df_raw.head(5))
+        st.dataframe(filtered_df.head(5))
         st.markdown("""
     Data is extracted from Youtube API V3 and downloaded from https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv. 
     Data consists of records of nideo title, channel title, publish time, tags, views, likes and dislikes, description, and comment count that is extracted daily
