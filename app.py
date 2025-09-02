@@ -14,6 +14,7 @@ model_likes = joblib.load("boosted_tree_model_likes.pkl")
 
 # Load dataset
 df = pd.read_csv("youtube_data_deploy.csv")
+df_raw = pd.read_csv("sampled_videos.csv")
 
 # Sidebar Navigation
 st.sidebar.title("Navigation")
@@ -60,7 +61,7 @@ def show_analysis():
         
         #--Dataset Overview
         st.subheader("Dataset Overview")
-        st.dataframe(filtered_df.head(5))
+        st.dataframe(df_raw.head(5))
         st.markdown("""
     Data is extracted from Youtube API V3 and downloaded from https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv. 
     Data consists of records of nideo title, channel title, publish time, tags, views, likes and dislikes, description, and comment count that is extracted daily
