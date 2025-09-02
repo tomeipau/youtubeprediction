@@ -86,41 +86,89 @@ def show_analysis():
 
      # --- TAB 2: Overview ---
     with tab2:
-        # Dashboard
+            # --- Dashboard ---
         st.subheader("Dashboard")
-        
+    
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Views", f"{filtered_df['view_count'].max():,.0f}")
         col2.metric("Total Likes", f"{filtered_df['likes'].max():,.0f}")
         col3.metric("Total Comments", f"{filtered_df['comment_count'].max():,.0f}")
-
-
-        # --- Engagement Trends ---
+    
+        # --- Top Categories ---
+        st.markdown("### Top Categories by View Count")
+        top_categories = (
+            filtered_df.groupby("category_encoded")["view_count"]
+            .sum()
+            .sort_values(ascending=False)
+            .head(10)
+            .reset_index()
+        )
+        fig_cat = px.bar(
+            top_categories,
+            x="category_encoded",
+            y="view_count",
+            title="Top 10 Categories by View Count",
+            color="view_count",
+            color_continuous_scale="Viridis"
+        )
+        st.plotly_chart(fig_cat, use_container_width=True)
+    
+        # --- Top Month with Most Trending Videos ---
+        st.markdown("### Top Months with Most Trending Videos")
+        top_months = (
+            filtered_df.groupby("month_encoded")["video_id"]
+            .count()
+            .sort_values(ascending=False)
+            .reset_index()
+        )
+        fig_months = px.bar(
+            top_months,
+            x="month_encoded",
+            y="video_id",
+            title="Number of Trending Videos per Month",
+            color="video_id",
+            color_continuous_scale="Plasma"
+        )
+        st.plotly_chart(fig_months, use_container_width=True)
+    
+        # --- Engagement Trends Over Time ---
         st.markdown("### Engagement Trends Over Time")
-
-        if video_url and not filtered_df.empty:
-            trend_col1, trend_col2 = st.columns(2)
     
-            with trend_col1:
-                fig_views = px.area(
-                    filtered_df, x="days_to_trend", y="view_count",
-                    title="View Count Over Time",
-                    markers=True
-                )
-                fig_views.update_traces(line_color="#1f77b4", fill='tozeroy')
-                st.plotly_chart(fig_views, use_container_width=True)
+        trend_col1, trend_col2 = st.columns(2)
     
-            with trend_col2:
-                fig_likes = px.bar(
-                    filtered_df, x="days_to_trend", y="likes",
-                    title="Likes Distribution Over Time",
-                    color="likes",
-                    color_continuous_scale="Viridis"
-                )
-                st.plotly_chart(fig_likes, use_container_width=True)
+        with trend_col1:
+            fig_views = px.area(
+                filtered_df, x="days_to_trend", y="view_count",
+                title="View Count Over Time", markers=True
+            )
+            fig_views.update_traces(line_color="#1f77b4", fill='tozeroy')
+            st.plotly_chart(fig_views, use_container_width=True)
     
-        else:
-            st.info("Please paste a YouTube video link above to view engagement trends.")
+        with trend_col2:
+            fig_likes = px.bar(
+                filtered_df, x="days_to_trend", y="likes",
+                title="Likes Distribution Over Time",
+                color="likes",
+                color_continuous_scale="Viridis"
+            )
+            st.plotly_chart(fig_likes, use_container_width=True)
+    
+        # Additional Engagement Metrics (Dislikes and Comments)
+        trend_col3, trend_col4 = st.columns(2)
+    
+        with trend_col3:
+            fig_dislikes = px.line(
+                filtered_df, x="days_to_trend", y="dislikes",
+                title="Dislikes Over Time", markers=True
+            )
+            st.plotly_chart(fig_dislikes, use_container_width=True)
+    
+        with trend_col4:
+            fig_comments = px.line(
+                filtered_df, x="days_to_trend", y="comment_count",
+                title="Comments Over Time", markers=True
+            )
+            st.plotly_chart(fig_comments, use_container_width=True)
     
     
     # --- TAB 3: Sentiment Analysis ---
