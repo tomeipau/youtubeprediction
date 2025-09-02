@@ -88,23 +88,15 @@ def show_analysis():
     with tab2:
         # Dashboard
         st.subheader("Dashboard")
+        
+        if video_url and not filtered_df.empty:
         col1, col2, col3 = st.columns(3)
         col1.metric("Total Views", f"{filtered_df['view_count'].max():,.0f}")
         col2.metric("Total Likes", f"{filtered_df['likes'].max():,.0f}")
         col3.metric("Total Comments", f"{filtered_df['comment_count'].max():,.0f}")
 
-        # Correlation Heatmap
-        corr = filtered_df[[
-            "view_count", "likes", "dislikes", "comment_count",
-            "views_per_day", "likes_per_view",
-            "title_score", "description_score", "tags_score"
-        ]].corr()
-
-        fig_corr = px.imshow(
-            corr, text_auto=True, aspect="auto",
-            title="Correlation Heatmap of Key Features"
-        )
-        st.plotly_chart(fig_corr, use_container_width=True)
+       else:
+            st.info("Please paste a YouTube video link above to view Dashboard.")
 
 
         # --- Engagement Trends ---
