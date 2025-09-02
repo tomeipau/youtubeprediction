@@ -108,7 +108,7 @@ def show_analysis():
 
 
         # --- Engagement Trends ---
-    st.markdown("### Engagement Trends Over Time")
+        st.markdown("### Engagement Trends Over Time")
 
         if video_url and not filtered_df.empty:
             trend_col1, trend_col2 = st.columns(2)
