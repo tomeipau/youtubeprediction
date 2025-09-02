@@ -93,28 +93,46 @@ def show_analysis():
         col2.metric("Total Likes", f"{filtered_df['likes'].max():,.0f}")
         col3.metric("Total Comments", f"{filtered_df['comment_count'].max():,.0f}")
 
+        # Correlation Heatmap
+        corr = filtered_df[[
+            "view_count", "likes", "dislikes", "comment_count",
+            "views_per_day", "likes_per_view",
+            "title_score", "description_score", "tags_score"
+        ]].corr()
+
+        fig_corr = px.imshow(
+            corr, text_auto=True, aspect="auto",
+            title="Correlation Heatmap of Key Features"
+        )
+        st.plotly_chart(fig_corr, use_container_width=True)
+
 
         # --- Engagement Trends ---
         st.markdown("### Engagement Trends Over Time")
-        trend_col1, trend_col2 = st.columns(2)
 
-        with trend_col1:
-            fig_views = px.area(
-                filtered_df, x="days_to_trend", y="view_count",
-                title="View Count Over Time",
-                markers=True
-            )
-            fig_views.update_traces(line_color="#1f77b4", fill='tozeroy')
-            st.plotly_chart(fig_views, use_container_width=True)
-        
-        with trend_col2:
-            fig_likes = px.bar(
-                filtered_df, x="days_to_trend", y="likes",
-                title="Likes Distribution Over Time",
-                color="likes",
-                color_continuous_scale="Viridis"
-            )
-        st.plotly_chart(fig_likes, use_container_width=True)
+        if video_url and not filtered_df.empty:
+            trend_col1, trend_col2 = st.columns(2)
+    
+            with trend_col1:
+                fig_views = px.area(
+                    filtered_df, x="days_to_trend", y="view_count",
+                    title="View Count Over Time",
+                    markers=True
+                )
+                fig_views.update_traces(line_color="#1f77b4", fill='tozeroy')
+                st.plotly_chart(fig_views, use_container_width=True)
+    
+            with trend_col2:
+                fig_likes = px.bar(
+                    filtered_df, x="days_to_trend", y="likes",
+                    title="Likes Distribution Over Time",
+                    color="likes",
+                    color_continuous_scale="Viridis"
+                )
+                st.plotly_chart(fig_likes, use_container_width=True)
+    
+        else:
+            st.info("Please paste a YouTube video link above to view engagement trends.")
     
     
     # --- TAB 3: Sentiment Analysis ---
