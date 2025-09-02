@@ -119,20 +119,20 @@ def show_analysis():
     
         # Additional Engagement Metrics (Dislikes and Comments)
         trend_col3, trend_col4 = st.columns(2)
-    
+
         with trend_col3:
-            fig_dislikes = px.line(
+            fig_dislikes = px.area(
                 filtered_df, x="days_to_trend", y="dislikes",
                 title="Dislikes Over Time", markers=True
             )
-            fig_views.update_traces(line_color="#1f77b4", fill='tozeroy')
+            fig_dislikes.update_traces(line_color="#d62728", fill='tozeroy')  # Red color
             st.plotly_chart(fig_dislikes, use_container_width=True)
-    
+        
         with trend_col4:
-            fig_comments = px.line(
+            fig_comments = px.bar(
                 filtered_df, x="days_to_trend", y="comment_count",
                 title="Comments Over Time",
-                color="comments",
+                color="comment_count",
                 color_continuous_scale="Viridis"
             )
             st.plotly_chart(fig_comments, use_container_width=True)
