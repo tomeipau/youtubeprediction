@@ -96,6 +96,7 @@ def show_analysis():
 
         # --- Engagement Trends ---
         st.markdown("### Engagement Trends Over Time")
+        trend_col1, trend_col2 = st.columns(2)
 
         with trend_col1:
             fig_views = px.area(
