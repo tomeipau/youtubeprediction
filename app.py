@@ -77,7 +77,7 @@ def show_analysis():
         st.image("EDA.png")
         st.markdown("""
         ### Sentiment Scoring Overview
-        Exploratory Data Analysis is a crucial step in developing models to identify the best feature selection and avoid skewness or biasness throughout the study. The findings of the analysis is as below: 
+        This dashboard uses **Google's Gemini LLM** to analyze text data (video titles, descriptions, and tags).  
         Each piece of text is scored based on **sentiment polarity** and **confidence level**, which are derived from the model's predictions.  
         
         - **Title Score**: Sentiment derived from video title.  
