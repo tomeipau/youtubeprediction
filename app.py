@@ -76,9 +76,16 @@ def show_analysis():
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
         st.markdown("""
-        This app predicts future views and likes of YouTube videos based on current metrics,
-        sentiment scores (via Gemini LLM), and metadata encodings.
-        """)
+        - **Text-based sentiment features**  
+  - *Tags* and *Title* showed strong correlation.  
+  - *Description* exhibited weaker correlation.  
+
+- **Numerical features**  
+  - *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* were identified as highly correlated.  
+
+- **Feature extraction**  
+  - Applied only to features with significant correlation to enhance model efficiency and relevance.  
+""")
 
 
      # --- TAB 2: Overview ---
