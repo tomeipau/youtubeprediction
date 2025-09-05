@@ -75,7 +75,8 @@ def show_analysis():
         #--EDA
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
-        st.markdown("""- **Text-based sentiment features**  
+        st.markdown("""
+        - **Text-based sentiment features**  
           - *Tags* and *Title* showed strong correlation.  
           - *Description* exhibited weaker correlation.  
         
