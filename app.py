@@ -74,7 +74,7 @@ def show_analysis():
         st.markdown("""
         - Dataset was processed in **BigQuery** for LLM sentiment scoring on the columns:  
           `title`, `description`, and `tags`.  
-        - Encodings were also applied for categorical values.  
+        - Encodings were also applied for other non-numerical values.  
         """)
     
         # -- EDA
