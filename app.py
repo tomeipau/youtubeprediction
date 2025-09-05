@@ -57,7 +57,7 @@ def show_analysis():
 
     # --- TAB 1: Project Overview ---
     with tab1:
-         # -- Dataset Overview
+        # -- Dataset Overview
         st.subheader("Dataset Overview")
         st.dataframe(df_raw.head(5))
         st.markdown("""
@@ -98,6 +98,7 @@ def show_analysis():
           - *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* show high correlation.  
         - Feature extraction is applied only to features with **high correlation**.  
         """)
+
 
 
      # --- TAB 2: Overview ---
