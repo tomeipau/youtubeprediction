@@ -75,17 +75,16 @@ def show_analysis():
         #--EDA
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
-        st.markdown("""
-        - **Text-based sentiment features**  
-  - *Tags* and *Title* showed strong correlation.  
-  - *Description* exhibited weaker correlation.  
-
-- **Numerical features**  
-  - *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* were identified as highly correlated.  
-
-- **Feature extraction**  
-  - Applied only to features with significant correlation to enhance model efficiency and relevance.  
-""")
+        st.markdown("""- **Text-based sentiment features**  
+          - *Tags* and *Title* showed strong correlation.  
+          - *Description* exhibited weaker correlation.  
+        
+        - **Numerical features**  
+          - *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* were identified as highly correlated.  
+        
+        - **Feature extraction**  
+          - Applied only to features with significant correlation to enhance model efficiency and relevance.  
+        """)
 
 
      # --- TAB 2: Overview ---
