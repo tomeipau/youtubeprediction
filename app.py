@@ -74,7 +74,7 @@ def show_analysis():
         st.markdown("""
         - Dataset was processed in **BigQuery** for LLM sentiment scoring on the columns:  
           `title`, `description`, and `tags`.  
-        - Encodings were also applied for other non-numerical values.  
+        - Encoding techniques were also applied for non-numerical columns.  
         """)
     
         # -- EDA
@@ -98,6 +98,7 @@ def show_analysis():
           - *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* show high correlation.  
         - Feature extraction is applied only to features with **high correlation**.  
         """)
+
 
 
 
