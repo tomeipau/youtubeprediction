@@ -57,24 +57,47 @@ def show_analysis():
 
     # --- TAB 1: Project Overview ---
     with tab1:
-        #st.subheader("Project Overview")
-        
-        #--Dataset Overview
+         # -- Dataset Overview
         st.subheader("Dataset Overview")
         st.dataframe(df_raw.head(5))
-        st.markdown("""Data is extracted from Youtube API V3 and downloaded from https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv. The dataset consists of 268,787 entries with 12 attributes and contains data from the year 2020-2024 in the US region. Target variable will be fixed as view_count and likes attribute to narrow down the study.""")
-
-         #--Processed Dataset (Encodings & LLM Embedded) Overview
+        st.markdown("""
+        - Data is extracted from **YouTube API V3** and downloaded from 
+          [Kaggle](https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv).  
+        - The dataset consists of **268,787 entries with 12 attributes**.  
+        - Data covers the period from **2020–2024** in the **US region**.  
+        - Target variables are fixed as **view_count** and **likes** to narrow down the study.  
+        """)
+    
+        # -- Processed Dataset (Encodings & LLM Embedded) Overview
         st.subheader("Processed Dataset (LLM Embedded) Overview")
         st.dataframe(filtered_df.head(5))
         st.markdown("""
-    Dataset was processed in Bigquery for LLM sentiment scoring for the columns title, description and tags. Encodings were also done for non-numerical values.
-    """)
-        #st.write(f"Total Records: {len(filtered_df)}")
-
-        #--EDA
+        - Dataset was processed in **BigQuery** for LLM sentiment scoring on the columns:  
+          `title`, `description`, and `tags`.  
+        - Encodings were also applied for categorical values.  
+        """)
+    
+        # -- EDA
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
+    
+        # -- EDA Explanation
+        st.markdown("""
+        ### EDA Overview
+        The analysis is done by first transforming the textual columns into numerical:
+    
+        - Text data with sentiment values are transformed into sentiment scores using **Google's Gemini LLM** library embedded in BigQuery.  
+        - Other text data such as **category** and **days** are transformed using **one-hot encoding techniques**.  
+    
+        Based on the correlation heatmap:
+    
+        - **Text sentiments**:  
+          - *Tags* and *Title* show high correlation.  
+          - *Description* shows low correlation.  
+        - **Numerical columns**:  
+          - *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* show high correlation.  
+        - Feature extraction is applied only to features with **high correlation**.  
+        """)
 
 
      # --- TAB 2: Overview ---
