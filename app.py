@@ -76,8 +76,8 @@ def show_analysis():
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
         st.markdown("""
-        ### Sentiment Scoring Overview
-        This dashboard uses **Google's Gemini LLM** to analyze text data (video titles, descriptions, and tags).  
+        ### Analysis Overview
+        This study uses **Google's Gemini LLM** to analyze text data (video titles, descriptions, and tags), and uses one-hot encoding technique to transform other textual columns.   
         Each piece of text is scored based on **sentiment polarity** and **confidence level**, which are derived from the model's predictions.  
         
         - **Title Score**: Sentiment derived from video title.  
