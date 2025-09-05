@@ -75,15 +75,21 @@ def show_analysis():
         #--EDA
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
-        st.markdown("""- **Text-based sentiment features**  
-                          - *Tags* and *Title* showed strong correlation.  
-                          - *Description* exhibited weaker correlation.  
-                        
-                        - **Numerical features**  
-                          - *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* were identified as highly correlated.  
-                        
-                        - **Feature extraction**  
-                          - Applied only to features with significant correlation to enhance model efficiency and relevance.""")
+        st.markdown("""
+        Exploratory Data Analysis is a crucial step in developing models to identify the best feature selection and avoid skewness or biasness throughout the study. The findings of the analysis is as below:
+        
+        - **Text-based sentiment features**: *Tags* and *Title* showed strong correlation.
+        - **Numerical featurese**: *Comment_count*, *Days_to_trend*, *Dislikes*, and *Views_per_day* were identified as highly correlated. 
+        - **Feature extraction**: Applied only to features with significant correlation to enhance model efficiency and relevance.
+        
+        **Score Meaning**:  
+        - Scores range from `-1` to `1`.  
+        - `-1` indicates a highly negative sentiment.  
+        - `0` represents a neutral sentiment.  
+        - `1` indicates a highly positive sentiment.  
+        
+        Gemini provides advanced contextual understanding, ensuring more accurate sentiment representation.
+        """)
 
 
      # --- TAB 2: Overview ---
