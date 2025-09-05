@@ -64,14 +64,14 @@ def show_analysis():
         st.dataframe(df_raw.head(5))
         st.markdown("""
     Data is extracted from Youtube API V3 and downloaded from https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv. 
-    The dataset consists of 268,787 entries with 12 attributes and contains data from the year 2020-2024 in the US region. Target variable will be fixed as view_count and likes attribute to narrow down the study.
+    Data consists of records of nideo title, channel title, publish time, tags, views, likes and dislikes, description, and comment count that is extracted daily
     """)
 
          #--Processed Dataset (Encodings & LLM Embedded) Overview
         st.subheader("Processed Dataset (LLM Embedded) Overview")
         st.dataframe(filtered_df.head(5))
         st.markdown("""
-   The dataset was processed in BigQuery using the Vertex AI library to perform LLM-based sentiment scoring on the title, description, and tags columns, with additional encoding applied to non-numerical values.
+    Dataset was processed in Bigquery for LLM sentiment scoring for the columns title, description and tags. Encodings were also done for non-numerical values.
     """)
         #st.write(f"Total Records: {len(filtered_df)}")
 
@@ -79,12 +79,8 @@ def show_analysis():
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
         st.markdown("""
-        For **text-based sentiment features**, the analysis revealed that *tags* and *title* exhibited strong correlations, 
-        whereas *description* demonstrated relatively weak correlation.  
-        
-        For **numerical features**, *comment_count*, *days_to_trend*, *dislikes*, and *views_per_day* were identified as highly correlated.  
-        
-        Subsequently, feature extraction was applied exclusively to attributes with significant correlation to ensure model efficiency and relevance.  
+        This app predicts future views and likes of YouTube videos based on current metrics,
+        sentiment scores (via Gemini LLM), and metadata encodings.
         """)
 
 
