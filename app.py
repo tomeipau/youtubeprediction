@@ -62,7 +62,7 @@ def show_analysis():
         #--Dataset Overview
         st.subheader("Dataset Overview")
         st.dataframe(df_raw.head(5))
-        st.markdown(""" - Data is extracted from Youtube API V3 and downloaded from https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv. - The dataset consists of 268,787 entries with 12 attributes and contains data from the year 2020-2024 in the US region. Target variable will be fixed as view_count and likes attribute to narrow down the study.""")
+        st.markdown(""" Data is extracted from Youtube API V3 and downloaded from https://www.kaggle.com/datasets/rsrishav/youtube-trending-video-dataset?select=US_youtube_trending_data.csv. The dataset consists of 268,787 entries with 12 attributes and contains data from the year 2020-2024 in the US region. Target variable will be fixed as view_count and likes attribute to narrow down the study.""")
 
          #--Processed Dataset (Encodings & LLM Embedded) Overview
         st.subheader("Processed Dataset (LLM Embedded) Overview")
