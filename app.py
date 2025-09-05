@@ -75,24 +75,6 @@ def show_analysis():
         #--EDA
         st.subheader("Exploratory Data Analysis")
         st.image("EDA.png")
-        st.markdown("""
-        ### Analysis Overview
-        This study uses **Google's Gemini LLM** to analyze text data (video titles, descriptions, and tags), and uses one-hot encoding technique to transform other textual columns.   
-        Each piece of text is scored based on **sentiment polarity** and **confidence level**, which are derived from the model's predictions.  
-        
-        - **Title Score**: Sentiment derived from video title.  
-        - **Description Score**: Sentiment from video description.  
-        - **Tags Score**: Sentiment based on video tags.  
-        
-        **Score Meaning**:  
-        - Scores range from `-1` to `1`.  
-        - `-1` indicates a highly negative sentiment.  
-        - `0` represents a neutral sentiment.  
-        - `1` indicates a highly positive sentiment.  
-        
-        Gemini provides advanced contextual understanding, ensuring more accurate sentiment representation.
-        """)
-        st.image("EDA.png")
 
 
      # --- TAB 2: Overview ---
